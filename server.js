@@ -128,7 +128,7 @@ function addDepartment() {
         }
     ])
         // Then function that queries and inserts the above user selection into the department table
-        .then(function (data) {
+        .then(function(data) {
             const query = `INSERT INTO department (department_name) VALUES(?)`
 
             employeeDb.query(query, data.department_name, (error, results) => {
@@ -147,7 +147,7 @@ function addDepartment() {
 
 // Function that prompts the user for role name, and takes that data and inserts into db query, and pushes it to the role table (called in the switch case above based from user selection)
 function addRole() {
-        inquirer.prompt([
+    inquirer.prompt([
         {
             name: 'title',
             type: 'input',
@@ -166,7 +166,7 @@ function addRole() {
         }
     ])
         // Then function that queries and inserts the above user selection into the employee_role table
-        .then(function (data) {
+        .then(function(data) {
             const query = `INSERT INTO employee_role (title, salary, department_id) VALUES("${data.title}", "${data.salary}", ${data.department})`
 
             employeeDb.query(query, (error, results) => {
@@ -191,7 +191,7 @@ function listDeptIds() {
             throw error
         } else {
             for (let i = 0; i < results.length; i++) {
-                deptIds.push(results[i].id)    
+                deptIds.push(results[i].id)
             }
         }
     })
@@ -201,46 +201,46 @@ function listDeptIds() {
 // Function that prompts the user for employee name, and takes that data and inserts into db query, and pushes it to the employee table (called in the switch case above based from user selection)
 function addEmployee() {
     inquirer.prompt([
-    {
-        name: 'fName',
-        type: 'input',
-        message: "What is the employee's first name?"
-    },
-    {
-        name: 'lName',
-        type: 'input',
-        message: "What is the employee's last name?"
-    },
-    {
-        name: 'role',
-        type: 'list',
-        message: 'Choose the ID of the role to add to',
-        choices: listRoleIds()
-    },
-    {
-        name: 'manager',
-        type: 'list',
-        message: "Choose the ID of the employee's manager",
-        choices: listManagerIds()
-    }
-    
-])
-    // Then function that queries and inserts the above user selection into the employee table
-    .then(function (data) {
-        const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES("${data.fName}", "${data.lName}", ${data.role}, ${data.manager})`
+        {
+            name: 'fName',
+            type: 'input',
+            message: "What is the employee's first name?"
+        },
+        {
+            name: 'lName',
+            type: 'input',
+            message: "What is the employee's last name?"
+        },
+        {
+            name: 'role',
+            type: 'list',
+            message: 'Choose the ID of the role to add to',
+            choices: listRoleIds()
+        },
+        {
+            name: 'manager',
+            type: 'list',
+            message: "Choose the ID of the employee's manager",
+            choices: listEmployeeIds()
+        }
 
-        employeeDb.query(query, (error, results) => {
-            if (error) {
-                throw error
-            } else {
-                console.log('')
-                console.log('Employee Added to Database, Click "View All Employees" to view changes')
-                console.log('')
-                console.table(results)
-                startTracker()
-            }
+    ])
+        // Then function that queries and inserts the above user selection into the employee table
+        .then(function(data) {
+            const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES("${data.fName}", "${data.lName}", ${data.role}, ${data.manager})`
+
+            employeeDb.query(query, (error, results) => {
+                if (error) {
+                    throw error
+                } else {
+                    console.log('')
+                    console.log('Employee Added to Database, Click "View All Employees" to view changes')
+                    console.log('')
+                    console.table(results)
+                    startTracker()
+                }
+            })
         })
-    })
 }
 
 // Function that queries the employee_role table, loops through the ids, and puts them in an array that turns into user selection options in the inquirer prompt
@@ -251,7 +251,7 @@ function listRoleIds() {
             throw error
         } else {
             for (let i = 0; i < results.length; i++) {
-                roleIds.push(results[i].id)  
+                roleIds.push(results[i].id)
             }
         }
     })
@@ -259,21 +259,66 @@ function listRoleIds() {
 }
 
 // Function that queries the employee table, loops through the ids, and puts them in an array that turns into user selection options in the inquirer prompt
-function listManagerIds() {
+function listEmployeeIds() {
     const managerIds = []
     employeeDb.query('SELECT * FROM employee', (error, results) => {
         if (error) {
             throw error
         } else {
             for (let i = 0; i < results.length; i++) {
-                managerIds.push(results[i].id)    
+                managerIds.push(results[i].id)
             }
         }
     })
     return managerIds
 }
 
+function updateEmployee() {
+    inquirer.prompt([
+        {
+            name: 'employee_id',
+            type: 'choice',
+            message: 'What is the ID of the employee you are updating?',
+            choices: listEmployeeIds()
+        },
+        {
+            name: 'role_id',
+            type: 'choice',
+            message: 'What is the ID for their new role?',
+            choices: listEmployeeRoleIds()
+        }
+    ])
+    
+    .then(function(data) {
+        const query = `UPDATE employee SET role_id = ${data.role_id} WHERE id = ${data.employee_id}`
+        
+        employeeDb.query(query, (error, results) => {
+            if (error) {
+                throw error
+            } else {
+                console.log('')
+                console.log('Employee Updated, Click "View All Employees" to view changes')
+                console.log('')
+                console.table(results)
+                startTracker()
+            }
+        })
+    })
+}
 
+function listEmployeeRoleIds() {
+    const employeeRoleIds = []
+    employeeDb.query('SELECT * FROM employee', (error, results) => {
+        if (error) {
+            throw error
+        } else {
+            for (let i = 0; i < results.length; i++) {
+                employeeRoleIds.push(results[i].role_id)
+            }
+        }
+    })
+    return employeeRoleIds
+}
 
 // Calls function to start
 startTracker()
