@@ -103,7 +103,8 @@ function viewRoles() {
 // Function that queries the employees table (called in the switch case above based from user selection)
 function viewEmployees() {
     const query = 
-        ''
+        'SELECT employee.id AS id, employee.first_name AS first_name, employee.last_name AS last_name, employee_role.title AS title, department.department_name AS department, employee_role.salary AS salary, CONCAT_WS(" ", manager.first_name, manager.last_name) AS manager FROM employee LEFT JOIN employee_role ON employee_role.id = employee.role_id LEFT JOIN department ON department.id = employee_role.department_id LEFT JOIN employee manager ON employee.manager_id = manager.id'
+    
     employeeDb.query(query, (error, results) => {
         if (error) {
             throw error
