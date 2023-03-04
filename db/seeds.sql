@@ -45,9 +45,3 @@ VALUES
     ('Rocky', 'Balboa', 008, 15),
     ('Jules', 'Winnfield', 011, null),
     ('Jackson', 'Sheen', 010, 19);
-
-
-
-SELECT employee_role.title AS title, employee_role.id AS id, department.department_name AS department, employee_role.salary AS salary 
-FROM employee_role 
-LEFT JOIN department ON department.id = employee_role.id

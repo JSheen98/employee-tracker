@@ -86,7 +86,7 @@ function viewDepartments() {
 // Function that queries the roles table (called in the switch case above based from user selection)
 function viewRoles() {
     const query = 
-        'SELECT employee_role.title AS title, employee_role.id AS id, employee_role.department_id AS department, employee_role.salary AS salary FROM employee_role JOIN department ON employee_role.department_id = department.id'
+        'SELECT employee_role.title AS title, employee_role.id AS id, department.department_name AS department, employee_role.salary AS salary FROM employee_role LEFT JOIN department ON department.id = employee_role.department_id'
     employeeDb.query(query, (error, results) => {
         if (error) {
             throw error
@@ -100,6 +100,45 @@ function viewRoles() {
     })
 }
 
+// Function that queries the employees table (called in the switch case above based from user selection)
+function viewEmployees() {
+    const query = 
+        ''
+    employeeDb.query(query, (error, results) => {
+        if (error) {
+            throw error
+        } else {
+            console.log('')
+            console.log('Viewing All Employees')
+            console.log('')
+            console.table(results)
+            startTracker()
+        }
+    })
+}
+
+// Function that queries the employees table (called in the switch case above based from user selection)
+function addDepartment() {
+    inquirer.prompt([
+        {
+            name: 'department_name',
+            type: 'input',
+            message: 'What would you like to name the new department?'
+        }
+    ])
+    .then(function(data) {
+        const query = `INSERT INTO department (department_name) VALUES(?)`
+
+        employeeDb.query(query, data.department_name, (error, results) => {
+            if (error) {
+                throw error
+            } else {
+                console.table(results)
+                startTracker()
+            }
+        })
+    })
+}
 
 
 // Calls function to start
