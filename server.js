@@ -273,6 +273,7 @@ function listEmployeeIds() {
     return managerIds
 }
 
+// Function that prompts user for employee id, and the id of the role they want to update to, then pushes this selection into a db query which updates the db
 function updateEmployee() {
     inquirer.prompt([
         {
@@ -289,6 +290,7 @@ function updateEmployee() {
         }
     ])
     
+    // Then function that queries and inserts the above data to update the role_id of a a given employee 
     .then(function(data) {
         const query = `UPDATE employee SET role_id = ${data.role_id} WHERE id = ${data.employee_id}`
         
@@ -306,6 +308,7 @@ function updateEmployee() {
     })
 }
 
+// Function that queries the employee table, loops through the role_ids, and puts them in an array that turns into user selection options in the inquirer prompt
 function listEmployeeRoleIds() {
     const employeeRoleIds = []
     employeeDb.query('SELECT * FROM employee', (error, results) => {
